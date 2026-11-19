@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OPERATION: RESCUE THE TEAM</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/menu.css" />
+    <link rel="stylesheet" href="css/maze.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/victory.css" />
+</head>
+<body>
+
+    <!-- SCREEN 1: TỐI GIẢN ĐÚNG NHƯ MẪU -->
+    <section id="screen-intro" class="screen active">
+        <div class="intro-card">
+            <div class="badge-rl">TABULAR Q-LEARNING • REINFORCEMENT LEARNING GAME</div>
+            <h1>OPERATION: RESCUE THE TEAM</h1>
+            <p id="intro-model-hint" class="model-hint"></p>
+            <button id="btn-start-mission" class="btn btn-primary btn-lg">START MISSION 🚀</button>
+        </div>
+    </section>
+
+    <!-- SCREEN 2: RESCUE CONTROL CENTER -->
+    <section id="screen-control" class="screen">
+        <header class="topbar">
+            <div class="topbar-title">
+                <h2>OPERATION: RESCUE THE TEAM</h2>
+                <span id="systemStatusBanner" class="status-banner">Ready to initiate AI Agent training.</span>
+            </div>
+            <div class="control-buttons">
+                <button id="btn-train" class="btn btn-primary">▶ Start Training</button>
+                <button id="btn-pause" class="btn btn-secondary">⏸ Pause</button>
+                <button id="btn-resume" class="btn btn-secondary">⏯ Resume</button>
+                <button id="btn-watch" class="btn btn-success">👁 Watch AI</button>
+                <button id="btn-manual" class="btn btn-outline">🎮 Manual Play</button>
+                <button id="btn-save" class="btn btn-outline">💾 Save Model</button>
+                <button id="btn-load" class="btn btn-outline">📂 Load Model</button>
+                <button id="btn-reset" class="btn btn-danger">↺ Reset</button>
+            </div>
+        </header>
+
+        <main class="control-layout">
+            <!-- LEFT: MAZE ARENA -->
+            <div class="arena-panel">
+                <div class="panel-header">
+                    <h3>🗺️ MAZE ARENA (12 × 12)</h3>
+                    <div class="item-indicators">
+                        <span id="gate-aplus-status" class="item-pill locked">A+ LOCKED 🔒</span>
+                    </div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="mazeCanvas" width="660" height="660"></canvas>
+                </div>
+
+                <div class="legend-bar">
+                    <span><strong>S</strong> Start</span>
+                    <span><strong>H1–H5</strong> Members (+30)</span>
+                    <span><strong style="color: #fca5a5;">✦</strong> Sao đỏ / Bẫy (-20)</span>
+                    <span><strong style="color: #fbcfe8;">✦</strong> Sao hồng / Thưởng (+15)</span>
+                    <span><strong>E</strong> A+ Gate (+250)</span>
+                </div>
+
+                <!-- TEAM RESCUE STATUS -->
+                <div class="rescue-panel">
+                    <div class="rescue-header">
+                        <h4>👥 TEAM RESCUE STATUS</h4>
+                        <span id="rescue-progress-text" class="rescue-count">0/5</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="rescue-progress-fill" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="members-grid">
+                        <div class="member-card">
+                            <span class="member-name">1. Hà Trang (H1)</span>
+                            <span id="status-H1" class="member-badge waiting">Waiting...</span>
+                        </div>
+                        <div class="member-card">
+                            <span class="member-name">2. Uyển Nhi (H2)</span>
+                            <span id="status-H2" class="member-badge waiting">Waiting...</span>
+                        </div>
+                        <div class="member-card">
+                            <span class="member-name">3. Quỳnh Anh (H3)</span>
+                            <span id="status-H3" class="member-badge waiting">Waiting...</span>
+                        </div>
+                        <div class="member-card">
+                            <span class="member-name">4. Hải Anh (H4)</span>
+                            <span id="status-H4" class="member-badge waiting">Waiting...</span>
+                        </div>
+                        <div class="member-card">
+                            <span class="member-name">5. Tô Quân (H5)</span>
+                            <span id="status-H5" class="member-badge waiting">Waiting...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: AI BRAIN, STATS & DECISION LOG -->
+            <div class="dashboard-panel">
+                <div class="card-box">
+                    <h3>🧠 AI BRAIN (Q-VALUES)</h3>
+                    <div class="state-line">
+                        <span>Current State:</span>
+                        <code id="brain-current-state">(0,0) | Team:[00000] | Tr:0</code>
+                    </div>
+                    <table class="q-table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Q-Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="q-row-up"><td>⬆ UP (0)</td><td id="q-val-up">0.000</td></tr>
+                            <tr id="q-row-down"><td>⬇ DOWN (1)</td><td id="q-val-down">0.000</td></tr>
+                            <tr id="q-row-left"><td>⬅ LEFT (2)</td><td id="q-val-left">0.000</td></tr>
+                            <tr id="q-row-right"><td>➡ RIGHT (3)</td><td id="q-val-right">0.000</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="decision-summary">
+                        <span>Selected: <strong id="brain-selected-action">—</strong></span>
+                        <span>Max Q: <strong id="brain-max-q">0.000</strong></span>
+                    </div>
+                </div>
+
+                <div class="card-box">
+                    <h3>📊 TRAINING STATISTICS</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Episode</span>
+                            <strong id="stat-episode">0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Epsilon (ε)</span>
+                            <strong id="stat-epsilon">1.0000</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Last Reward</span>
+                            <strong id="stat-last-reward">0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Reward (100)</span>
+                            <strong id="stat-avg-reward">—</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success Rate</span>
+                            <strong id="stat-success-rate">N/A</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Steps / States</span>
+                            <strong><span id="stat-steps">0 / 450</span> • <span id="stat-states">0</span>s</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-box">
+                    <h3>📈 LEARNING PROGRESS (REWARD / EPISODE)</h3>
+                    <canvas id="learningChart" width="420" height="135"></canvas>
+                </div>
+
+                <div class="card-box log-box">
+                    <h3>📜 AI DECISION LOG</h3>
+                    <div id="decisionLogContainer" class="log-container">
+                        <div class="log-empty">No actions recorded yet.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- SCREEN 3: VICTORY SCREEN -->
+    <section id="screen-victory" class="screen">
+        <div class="victory-card">
+            <div class="trophy">🏆 A+</div>
+            <h1>MISSION COMPLETED!</h1>
+            <h2>ALL 5 TEAMMATES RESCUED! CONGRATULATIONS!</h2>
+
+            <div class="victory-names">
+                HÀ TRANG · UYỂN NHI · QUỲNH ANH · HẢI ANH · TÔ QUÂN
+            </div>
+
+            <p class="victory-slogan">FIVE FRIENDS. ONE TEAM. FIVE A+ GRADES!</p>
+            <p class="victory-desc">
+                Congratulations to all five members for navigating the maze of challenges and successfully reaching the A+ goal in the final exams!
+            </p>
+
+            <div class="victory-metrics">
+                <div class="v-metric">
+                    <span>Total number of steps</span>
+                    <strong id="vic-steps">0</strong>
+                </div>
+                <div class="v-metric">
+                    <span>Total Reward</span>
+                    <strong id="vic-reward">0</strong>
+                </div>
+                <div class="v-metric">
+                    <span>Total Episodes</span>
+                    <strong id="vic-episodes">0</strong>
+                </div>
+            </div>
+
+            <div class="victory-actions">
+                <button id="btn-replay-watch" class="btn btn-success btn-lg">👁 Revisiting AI maze-solving</button>
+                <button id="btn-back-control" class="btn btn-outline btn-lg">⬅ Return to Control Center</button>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
